@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/model/todo.dart';
 
-
 class TodoApplication extends StatefulWidget {
-
- 
   TodoApplication({super.key});
-
-  
 
   final List<Todo> todos = [
     Todo(
@@ -43,9 +38,8 @@ class TodoApplication extends StatefulWidget {
 class _TodoApplicationState extends State<TodoApplication> {
   final GlobalKey<FormState> todoFormKey = GlobalKey();
 
-
-  String title ="";
-  String description ="";
+  String title = "";
+  String description = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,100 +58,127 @@ class _TodoApplicationState extends State<TodoApplication> {
             leading: Checkbox(
               value: widget.todos[i].isCompleted,
               onChanged: (value) {
-               
+                setState(() {
+                  widget.todos[i].isCompleted = value ?? false;
+                });
               },
             ),
             title: Text(widget.todos[i].title),
             subtitle: Text(widget.todos[i].description),
+            trailing: IconButton(
+              onPressed: () {
+                setState(() {
+                  widget.todos.removeAt(i);
+                });
+              },
+              icon:Icon(Icons.delete),
+              color: Colors.red,
+            ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        showModalBottomSheet(context: context, builder: (context)
-        
-        {
-          return SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Form(
-                key: todoFormKey,
-                child: Column(
-                children: [
-                  Text("Add Todo",style: TextStyle(fontSize: 28),),
-                  TextFormField(decoration: InputDecoration(labelText: "Title"),
-                   validator: (value) {
-                    if (value == null || value.isEmpty){
-                      return "Please Provide Description";
-                    }
-                    else{
-                      return null;
-                    }
-                  }
-                  ,
-
-
-                  onSaved: (value) {
-                    setState(() {
-                      title=value!;
-                    });
-
-                    
-                  },
-
-                  onTapOutside: (event) => FocusScope.of(context).requestFocus(FocusNode()),
-                  ),
-                  TextFormField(decoration: InputDecoration(labelText: "Description"), maxLines: 3,
-                  validator: (value) {
-                    if (value == null || value.isEmpty){
-                      return "Please Provide Description";
-                    }
-                    else{
-                      return null;
-                    }
-                  },
-                  onSaved: (value) {
-                    setState(() {
-                      description=value!;
-                    });
-                    
-                  },
-
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Form(
+                    key: todoFormKey,
+                    child: Column(
                       children: [
-                        FilledButton(
-                          onPressed: () {
-                          Navigator.of(context).pop();
-                          },
-                          child: Text("Cancel"),
-                        ),
-                        FilledButton(onPressed: () {
-
-                            if(!todoFormKey.currentState!.validate()){
-                              return;
+                        Text("Add Todo", style: TextStyle(fontSize: 28)),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Title"),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please Provide Description";
+                            } else {
+                              return null;
                             }
+                          },
 
-                            todoFormKey.currentState!.save();
-
+                          onSaved: (value) {
                             setState(() {
-                              widget.todos.add(Todo(id: widget.todos.length.toString(), title: title, description: description));
+                              title = value!;
                             });
-                        }, child: Text("Submit")),
+                          },
+
+                          onTapOutside:
+                              (event) => FocusScope.of(
+                                context,
+                              ).requestFocus(FocusNode()),
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Description"),
+                          maxLines: 3,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please Provide Description";
+                            } else {
+                              return null;
+                            }
+                          },
+                          onSaved: (value) {
+                            setState(() {
+                              description = value!;
+                            });
+                          },
+
+                          onTapOutside:
+                              (event) => FocusScope.of(
+                                context,
+                              ).requestFocus(FocusNode()),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              FilledButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Cancel"),
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  if (!todoFormKey.currentState!.validate()) {
+                                    return;
+                                  }
+
+                                  todoFormKey.currentState!.save();
+
+                                  setState(() {
+                                    widget.todos.add(
+                                      Todo(
+                                        id: widget.todos.length.toString(),
+                                        title: title,
+                                        description: description,
+                                      ),
+                                    );
+                                  });
+
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Submit"),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
-                    
                     ),
                   ),
-                ],
-              )),
-            ),
+                ),
+              );
+            },
           );
-        }
-        );
-      },child: Icon(Icons.add),),
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
