@@ -115,6 +115,7 @@ class _TodoApplicationState extends State<TodoApplication> {
                     });
                     
                   },
+
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -132,6 +133,12 @@ class _TodoApplicationState extends State<TodoApplication> {
                             if(!todoFormKey.currentState!.validate()){
                               return;
                             }
+
+                            todoFormKey.currentState!.save();
+
+                            setState(() {
+                              widget.todos.add(Todo(id: widget.todos.length.toString(), title: title, description: description));
+                            });
                         }, child: Text("Submit")),
                       ],
                     
