@@ -80,7 +80,9 @@ class _TodoApplicationState extends State<TodoApplication> {
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Form(child: Column(
+              child: Form(
+                key: todoFormKey,
+                child: Column(
                 children: [
                   Text("Add Todo",style: TextStyle(fontSize: 28),),
                   TextFormField(decoration: InputDecoration(labelText: "Title"),
@@ -93,12 +95,17 @@ class _TodoApplicationState extends State<TodoApplication> {
                     }
                   }
                   ,
+
+
                   onSaved: (value) {
                     setState(() {
                       title=value!;
                     });
+
                     
                   },
+
+                  onTapOutside: (event) => FocusScope.of(context).requestFocus(FocusNode()),
                   ),
                   TextFormField(decoration: InputDecoration(labelText: "Description"), maxLines: 3,
                   validator: (value) {
