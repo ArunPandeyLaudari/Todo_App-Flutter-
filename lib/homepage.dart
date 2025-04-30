@@ -51,7 +51,12 @@ class _TodoApplicationState extends State<TodoApplication> {
         backgroundColor: const Color.fromARGB(255, 21, 4, 145),
         centerTitle: true,
       ),
-      body: ListView.builder(
+      body:widget.todos.isEmpty ?
+       Center(
+        child: Text("Ooops No Any Todo List"),
+       )
+       :
+       ListView.builder(
         itemCount: widget.todos.length,
         itemBuilder: (ctx, i) {
           return ListTile(
@@ -67,9 +72,44 @@ class _TodoApplicationState extends State<TodoApplication> {
             subtitle: Text(widget.todos[i].description),
             trailing: IconButton(
               onPressed: () {
-                setState(() {
-                  widget.todos.remove(widget.todos[i]);
-                });
+               showDialog(context: context, builder: (context) {
+                 return AlertDialog(
+                  title: Text("Are You Sure To Delete",style: TextStyle(color: Colors.red),),
+                  content: Text("This action is irrverseval"),
+                  actions: [
+                    FilledButton.tonal
+                    (
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red.shade400,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+
+                        setState(() {
+                          widget.todos.remove(widget.todos[i]);
+
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar
+                        (
+                          backgroundColor: Colors.green.shade500,behavior: SnackBarBehavior.floating,duration: Duration(seconds: 3),showCloseIcon:true ,
+                          
+                          content: Text("Successfully Deleted")));
+                        Navigator.of(context).pop();
+
+                        
+                      
+                    }, child: Text("Yes")),
+
+                    FilledButton(onPressed: (){
+                          Navigator.of(context).pop();
+
+                    }, child: Text("Cancel"))
+
+
+                  ],
+                 );
+               },);
               },
               icon:Icon(Icons.delete),
               color: Colors.red,
