@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/model/todo.dart';
 
@@ -36,6 +37,16 @@ class TodoApplication extends StatefulWidget {
 }
 
 class _TodoApplicationState extends State<TodoApplication> {
+
+  fetchTodos() async {
+   final Dio dio=Dio();
+ final response= await  dio.get('https://jsonplaceholder.typicode.com/todos');
+  
+
+  for(var todo in response.data){
+    widget.todos.add(Todo.fromMap(todo));
+  }
+  }
   final GlobalKey<FormState> todoFormKey = GlobalKey();
 
   String title = "";
@@ -55,68 +66,90 @@ class _TodoApplicationState extends State<TodoApplication> {
        Center(
         child: Text("Ooops No Any Todo List"),
        )
-       :
-       ListView.builder(
-        itemCount: widget.todos.length,
-        itemBuilder: (ctx, i) {
-          return ListTile(
-            leading: Checkbox(
-              value: widget.todos[i].isCompleted,
-              onChanged: (value) {
-                setState(() {
-                  widget.todos[i].isCompleted = value ?? false;
-                });
-              },
-            ),
-            title: Text(widget.todos[i].title),
-            subtitle: Text(widget.todos[i].description),
-            trailing: IconButton(
-              onPressed: () {
-               showDialog(context: context, builder: (context) {
-                 return AlertDialog(
-                  title: Text("Are You Sure To Delete",style: TextStyle(color: Colors.red),),
-                  content: Text("This action is irrverseval"),
-                  actions: [
-                    FilledButton.tonal
-                    (
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.red.shade400,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {
+     :FutureBuilder(
+         future: fetchTodos(),
+         builder: (context, snapshot) {
+           if (snapshot.connectionState == ConnectionState.done) {
+             if (snapshot.hasData) {
+               return ListView.builder(
+                 itemCount: widget.todos.length,
+                 itemBuilder: (ctx, i) {
+                   return ListTile(
+                     leading: Checkbox(
+                       value: widget.todos[i].isCompleted,
+                       onChanged: (value) {
+                         setState(() {
+                           widget.todos[i].isCompleted = value ?? false;
+                         });
+                       },
+                     ),
+                     title: Text(widget.todos[i].title),
+                     subtitle: Text(widget.todos[i].description ?? "-"),
+                     trailing: IconButton(
+                       onPressed: () {
+                         showDialog(
+                           context: context,
+                           builder: (context) {
+                             return AlertDialog(
+                               title: Text(
+                                 "Are You Sure To Delete",
+                                 style: TextStyle(color: Colors.red),
+                               ),
+                               content: Text("This action is irreversible"),
+                               actions: [
+                                 FilledButton.tonal(
+                                   style: FilledButton.styleFrom(
+                                     backgroundColor: Colors.red.shade400,
+                                     foregroundColor: Colors.white,
+                                   ),
+                                   onPressed: () {
+                                     setState(() {
+                                       widget.todos.remove(widget.todos[i]);
+                                     });
 
-                        setState(() {
-                          widget.todos.remove(widget.todos[i]);
-
-                        });
-
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar
-                        (
-                          backgroundColor: Colors.green.shade500,behavior: SnackBarBehavior.floating,duration: Duration(seconds: 3),showCloseIcon:true ,
-                          
-                          content: Text("Successfully Deleted")));
-                        Navigator.of(context).pop();
-
-                        
-                      
-                    }, child: Text("Yes")),
-
-                    FilledButton(onPressed: (){
-                          Navigator.of(context).pop();
-
-                    }, child: Text("Cancel"))
-
-
-                  ],
-                 );
-               },);
-              },
-              icon:Icon(Icons.delete),
-              color: Colors.red,
-            ),
-          );
-        },
-      ),
+                                     ScaffoldMessenger.of(context)
+                                         .showSnackBar(SnackBar(
+                                       backgroundColor:
+                                           Colors.green.shade500,
+                                       behavior: SnackBarBehavior.floating,
+                                       duration: Duration(seconds: 3),
+                                       showCloseIcon: true,
+                                       content: Text("Successfully Deleted"),
+                                     ));
+                                     Navigator.of(context).pop();
+                                   },
+                                   child: Text("Yes"),
+                                 ),
+                                 FilledButton(
+                                   onPressed: () {
+                                     Navigator.of(context).pop();
+                                   },
+                                   child: Text("Cancel"),
+                                 ),
+                               ],
+                             );
+                           },
+                         );
+                       },
+                       icon: Icon(Icons.delete),
+                       color: Colors.red,
+                     ),
+                   );
+                 },
+               );
+             } else if (snapshot.hasError) {
+               return Center(
+                 child: Text("Error ${snapshot.error}"),
+               );
+             } else {
+               return Center(child: CircularProgressIndicator());
+             }
+           } else {
+             return Center(child: CircularProgressIndicator());
+           }
+         },
+       ),
+      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
