@@ -46,6 +46,8 @@ class _TodoApplicationState extends State<TodoApplication> {
   for(var todo in response.data){
     widget.todos.add(Todo.fromMap(todo));
   }
+
+  return widget.todos;
   }
   final GlobalKey<FormState> todoFormKey = GlobalKey();
 
@@ -57,7 +59,7 @@ class _TodoApplicationState extends State<TodoApplication> {
       appBar: AppBar(
         title: const Text(
           "Todo Application",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color.fromARGB(255, 236, 233, 233)),
         ),
         backgroundColor: const Color.fromARGB(255, 21, 4, 145),
         centerTitle: true,
