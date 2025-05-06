@@ -5,7 +5,7 @@ import 'package:todo_app/model/todo.dart';
 class TodoApplication extends StatefulWidget {
   TodoApplication({super.key});
 
-  final List<Todo> todos = [
+   List<Todo> todos = [
     Todo(
       id: "1",
       title: "This is title",
@@ -38,16 +38,39 @@ class TodoApplication extends StatefulWidget {
 
 class _TodoApplicationState extends State<TodoApplication> {
 
+
+ String filter='all';
+
   fetchTodos() async {
-   final Dio dio=Dio();
+
+  widget.todos.clear();
+
+  
+  
+
+  final Dio dio=Dio();
  final response= await  dio.get('https://jsonplaceholder.typicode.com/todos');
+
+
+
   
 
   for(var todo in response.data){
     widget.todos.add(Todo.fromMap(todo));
   }
 
-  return widget.todos;
+  
+  if(filter =='All'){
+    return widget.todos;
+  }
+  else if(filter == 'Completed'){
+    return widget.todos.where((todo)=>todo.isCompleted).toList();
+  }
+  else{
+     return widget.todos.where((todo)=>!todo.isCompleted).toList();
+  }
+  
+
   }
   final GlobalKey<FormState> todoFormKey = GlobalKey();
 
@@ -76,6 +99,9 @@ class _TodoApplicationState extends State<TodoApplication> {
             ActionChip(
               onPressed: () {
                 
+                setState(() {
+                  filter='All';
+                });
               },
               label: Text(
                 'All',
@@ -95,11 +121,8 @@ class _TodoApplicationState extends State<TodoApplication> {
               onPressed: () {
 
                 setState(() {
-                  widget.todos.where((todo)=>
-                  todo.isCompleted
-                  );
+                  filter='Completed';
                 });
-
                   
               },
              
@@ -111,7 +134,9 @@ class _TodoApplicationState extends State<TodoApplication> {
               ),
 
               onPressed: () {
-                
+                setState(() {
+                  filter='Pending';
+                });
               },
 
                backgroundColor: const Color.fromARGB(255, 24, 3, 78),
@@ -126,6 +151,7 @@ class _TodoApplicationState extends State<TodoApplication> {
                builder: (context, snapshot) {
                  if (snapshot.connectionState == ConnectionState.done) {
                    if (snapshot.hasData) {
+                    widget.todos = snapshot.data as List<Todo>;
                      return ListView.builder(
                        itemCount: widget.todos.length,
                        itemBuilder: (ctx, i) {
