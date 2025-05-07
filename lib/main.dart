@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/homepage.dart';
+import 'package:todo_app/app_routes.dart';
+import 'package:todo_app/postpage.dart';
+import 'package:todo_app/postviewscreen.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +20,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       debugShowCheckedModeBanner: false,
-      home:TodoApplication(),
+      home:Postpage(),
+      routes:{
+        AppRoutes.postScreen:(context)=>Postpage(),
+        AppRoutes.postViewScreen:(context)=>ViewPostPage(),
+      },
     );
   }
 }
