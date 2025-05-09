@@ -20,10 +20,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       debugShowCheckedModeBanner: false,
-      home:Postpage(),
+      home:PostScreen(),
       routes:{
-        AppRoutes.postScreen:(context)=>Postpage(),
-        AppRoutes.postViewScreen:(context)=>ViewPostPage(),
+        AppRoutes.postScreen:(context)=>PostScreen(),
+        AppRoutes.postViewScreen:(context)=>postViewScreen(),
       },
     );
   }
